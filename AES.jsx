@@ -312,14 +312,15 @@ class AES128 {
 
   //Start here
   /*******************************************************/
-  runAes = input => {
-    return this.toBinary(input);
+  runAes = () => {
+    return this.toBinary(text);
   };
   /*******************************************************/
 
+  shahiXOR = (a, b) => (a === b ? "0" : "1");
   //ASCII to binary and back
   /*******************************************************/
-  _toAscii = bin => {
+  toAscii = bin => {
     return bin.replace(/\s*[01]{8}\s*/g, bin => {
       return String.fromCharCode(parseInt(bin, 2));
     });
@@ -356,7 +357,7 @@ main = button => {
   output.value = "";
   if (button.id === "buttonAES") {
     let tester = new AES128(input, key);
-    output.value = tester.runAes(input, output);
+    output.value = tester.runAes();
   }
 
   console.log(output.value);
