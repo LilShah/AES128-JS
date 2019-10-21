@@ -322,16 +322,20 @@ class AES128 {
   /*******************************************************/
 
   shahiXOR = (a, b) => (a === b ? "0" : "1");
+
   //ASCII to hex
   /*******************************************************/
   toHex = () => {
     let keyArr = [];
-    for (var n = 0, l = this.key.length; n < l; n++) {
-      var hex = Number(this.key.charCodeAt(n)).toString(16);
+    for (let i = 0, j = this.key.length; i < j; ++i) {
+      let hex = Number(this.key.charCodeAt(i)).toString(16);
       keyArr.push(hex);
     }
+    let i = 0;
     while (keyArr.length < 16) {
-      keyArr.push();
+      keyArr.push(Number(this.text.charCodeAt(i)).toString(16));
+      ++i;
+      if (i === this.text.length) i = 0;
     }
     return keyArr;
   };
