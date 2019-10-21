@@ -321,7 +321,18 @@ class AES128 {
   };
   /*******************************************************/
 
-  shahiXOR = (a, b) => (a === b ? "0" : "1");
+  //W operations
+  /******************************************************/
+  getNextW = w => {
+    //left shift
+    w.push(w.shift());
+  };
+  /******************************************************/
+
+  //XOR
+  /*******************************************************/
+  shahiXOR = (a, b) => parseInt(a, 16) ^ parseInt(b, 16);
+  /*******************************************************/
 
   //ASCII to hex
   /*******************************************************/
@@ -340,6 +351,26 @@ class AES128 {
     return keyArr;
   };
 
+  /******************************************************/
+
+  //ASCII to binary and back
+  /*******************************************************/
+  _toAscii = bin => {
+    return bin.replace(/\s*[01]{8}\s*/g, bin => {
+      return String.fromCharCode(parseInt(bin, 2));
+    });
+  };
+
+  toBinary = str => {
+    return str.replace(/[\s\S]/g, str => {
+      str = this.zeroPad(str.charCodeAt().toString(2));
+      return str;
+    });
+  };
+
+  zeroPad = num => {
+    return "00000000".slice(String(num).length) + num;
+  };
   /******************************************************/
 
   //Round start
