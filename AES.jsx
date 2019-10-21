@@ -361,7 +361,7 @@ main = button => {
   output.value = "";
   if (button.id === "buttonAES") {
     let tester = new AES128(input, key);
-    output.value = tester.runAes(input, output);
+    output.value = tester.runAes();
   }
 
   console.log(output.value);
