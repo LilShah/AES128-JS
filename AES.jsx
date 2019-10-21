@@ -313,29 +313,29 @@ class AES128 {
   //Start here
   /*******************************************************/
   runAes = () => {
-    return this.toBinary(text);
+    keyArr = this.toHex();
+    w0 = keyArr.slice(0, 4);
+    w1 = keyArr.slice(4, 8);
+    w2 = keyArr.slice(8, 12);
+    w3 = keyArr.slice(12);
   };
   /*******************************************************/
 
   shahiXOR = (a, b) => (a === b ? "0" : "1");
-  //ASCII to binary and back
+  //ASCII to hex
   /*******************************************************/
-  toAscii = bin => {
-    return bin.replace(/\s*[01]{8}\s*/g, bin => {
-      return String.fromCharCode(parseInt(bin, 2));
-    });
+  toHex = () => {
+    let keyArr = [];
+    for (var n = 0, l = this.key.length; n < l; n++) {
+      var hex = Number(this.key.charCodeAt(n)).toString(16);
+      keyArr.push(hex);
+    }
+    while (keyArr.length < 16) {
+      keyArr.push();
+    }
+    return keyArr;
   };
 
-  toBinary = str => {
-    return str.replace(/[\s\S]/g, str => {
-      str = this.zeroPad(str.charCodeAt().toString(2));
-      return str;
-    });
-  };
-
-  zeroPad = num => {
-    return "00000000".slice(String(num).length) + num;
-  };
   /******************************************************/
 
   //Round start
