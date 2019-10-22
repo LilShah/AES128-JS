@@ -313,35 +313,68 @@ class AES128 {
   //Start here
   /*******************************************************/
   runAes = () => {
-    keyArr = this.toHex();
+    keyArr = this.toHex(key);
+    keyArr = this.keyPadding(key);
     w0 = keyArr.slice(0, 4);
     w1 = keyArr.slice(4, 8);
     w2 = keyArr.slice(8, 12);
     w3 = keyArr.slice(12);
+    w4 = this.wXor(w0, this.getNextW(w3, 0));
   };
   /*******************************************************/
 
   //W operations
   /******************************************************/
-  getNextW = w => {
+  getNextW = (w, round) => {
     //left shift
     w.push(w.shift());
+    //sBox replacement
+    nw = [];
+    for (let i = 0; i < w.length; ++i) {
+      let x = this.sBox[parseInt(w.charAt(0), 16)][parseInt(w.charAt(1), 16)];
+      x = this.shahiXOR(x, this.rCon[round][i]);
+      nw.push(x);
+    }
+    return nw;
   };
   /******************************************************/
 
   //XOR
   /*******************************************************/
-  shahiXOR = (a, b) => parseInt(a, 16) ^ parseInt(b, 16);
+  shahiXOR = (a, b) => {
+    if (typeof a === "number" && typeof b === "number")
+      return parseInt(a) ^ parseInt(b);
+    else if (typeof a === "number" && typeof b === "string")
+      return parseInt(a) ^ parseInt(b, 16);
+    else if (typeof a === "string" && typeof b === "number")
+      return parseInt(a, 16) ^ parseInt(b);
+    else if (typeof a === "string" && typeof b === "string")
+      return parseInt(a, 16) ^ parseInt(b, 16);
+  };
+
+  wXor = (w1, w2) => {
+    nw = [];
+    for (let i = 0; i < w1.length; ++i) {
+      let x = this.shahiXOR(w1[i], w2[i]);
+      nw.push(nw);
+    }
+    return nw;
+  };
   /*******************************************************/
 
   //ASCII to hex
   /*******************************************************/
-  toHex = () => {
+  toHex = str => {
     let keyArr = [];
-    for (let i = 0, j = this.key.length; i < j; ++i) {
-      let hex = Number(this.key.charCodeAt(i)).toString(16);
+    for (let i = 0, j = this.str.length; i < j; ++i) {
+      let hex = Number(this.str.charCodeAt(i)).toString(16);
       keyArr.push(hex);
     }
+    return keyArr;
+  };
+
+  /******************************************************/
+  keyPadding = keyArr => {
     let i = 0;
     while (keyArr.length < 16) {
       keyArr.push(Number(this.text.charCodeAt(i)).toString(16));
@@ -350,9 +383,6 @@ class AES128 {
     }
     return keyArr;
   };
-
-  /******************************************************/
-
   //ASCII to binary and back
   /*******************************************************/
   _toAscii = bin => {
