@@ -370,6 +370,20 @@ class AES128 {
     let key8 = w32.concat(w33, w34, w35);
     let key9 = w36.concat(w37, w38, w39);
     let key10 = w40.concat(w41, w42, w43);
+    textArr = this.toHex(this.text);
+    if (textArr.length < 16) {
+      for (let i = 0; i < 16 - textArr.length; ++i) textArr.push(0);
+    } else {
+      let newTextArr = [];
+      while (textArr.length > 16) {
+        let tempArr = [];
+        for (let i = 0; i < 16; ++i) {
+          tempArr.push(textArr.shift());
+        }
+        newTextArr.push(tempArr);
+      }
+    }
+    if (textArr.length > 0) newTextArr.push(textArr);
   };
   /*******************************************************/
 
