@@ -359,6 +359,17 @@ class AES128 {
     w41 = this.wXor(w37, w40);
     w42 = this.wXor(w38, w41);
     w43 = this.wXor(w39, w42);
+    let key0 = w0.concat(w1, w2, w3);
+    let key1 = w4.concat(w5, w6, w7);
+    let key2 = w8.concat(w9, w10, w11);
+    let key3 = w12.concat(w13, w14, w15);
+    let key4 = w16.concat(w17, w18, w19);
+    let key5 = w20.concat(w21, w22, w23);
+    let key6 = w24.concat(w25, w26, w27);
+    let key7 = w28.concat(w29, w30, w31);
+    let key8 = w32.concat(w33, w34, w35);
+    let key9 = w36.concat(w37, w38, w39);
+    let key10 = w40.concat(w41, w42, w43);
   };
   /*******************************************************/
 
