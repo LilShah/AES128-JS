@@ -307,58 +307,65 @@ class AES128 {
       [0x1b, 0x00, 0x00, 0x00],
       [0x36, 0x00, 0x00, 0x00]
     ];
+    this.roundKeys = [];
   }
   /*******************************************************/
 
   //Start here
   /*******************************************************/
   runAes = () => {
-    keyArr = this.toHex(key);
+    let keyArr = this.toHex(this.key);
     keyArr = this.keyPadding(keyArr);
-    w0 = keyArr.slice(0, 4);
-    w1 = keyArr.slice(4, 8);
-    w2 = keyArr.slice(8, 12);
-    w3 = keyArr.slice(12);
-    w4 = this.wXor(w0, this.getNextW(w3, 0));
-    w5 = this.wXor(w1, w4);
-    w6 = this.wXor(w2, w5);
-    w7 = this.wXor(w3, w6);
-    w8 = this.wXor(w4, this.getNextW(w7, 0));
-    w9 = this.wXor(w5, w8);
-    w10 = this.wXor(w6, w9);
-    w11 = this.wXor(w7, w10);
-    w12 = this.wXor(w8, this.getNextW(w11, 0));
-    w13 = this.wXor(w9, w12);
-    w14 = this.wXor(w10, w13);
-    w15 = this.wXor(w11, w14);
-    w16 = this.wXor(w12, this.getNextW(w15, 0));
-    w17 = this.wXor(w13, w16);
-    w18 = this.wXor(w14, w17);
-    w19 = this.wXor(w15, w18);
-    w20 = this.wXor(w16, this.getNextW(w19, 0));
-    w21 = this.wXor(w17, w20);
-    w22 = this.wXor(w18, w21);
-    w23 = this.wXor(w19, w22);
-    w24 = this.wXor(w20, this.getNextW(w23, 0));
-    w25 = this.wXor(w21, w24);
-    w26 = this.wXor(w22, w25);
-    w27 = this.wXor(w23, w26);
-    w28 = this.wXor(w24, this.getNextW(w27, 0));
-    w29 = this.wXor(w25, w28);
-    w30 = this.wXor(w26, w29);
-    w31 = this.wXor(w27, w30);
-    w32 = this.wXor(w28, this.getNextW(w31, 0));
-    w33 = this.wXor(w29, w32);
-    w34 = this.wXor(w30, w33);
-    w35 = this.wXor(w31, w34);
-    w36 = this.wXor(w32, this.getNextW(w35, 0));
-    w37 = this.wXor(w33, w36);
-    w38 = this.wXor(w34, w37);
-    w39 = this.wXor(w35, w38);
-    w40 = this.wXor(w36, this.getNextW(w39, 0));
-    w41 = this.wXor(w37, w40);
-    w42 = this.wXor(w38, w41);
-    w43 = this.wXor(w39, w42);
+    console.log(keyArr);
+    let w0 = keyArr.slice(0, 4);
+    console.log(w0);
+    let w1 = keyArr.slice(4, 8);
+    console.log(w1);
+    let w2 = keyArr.slice(8, 12);
+    console.log(w2);
+    let w3 = keyArr.slice(12);
+    console.log(w3);
+
+    let w4 = this.wXor(w0, this.getNextW(w3, 0));
+    let w5 = this.wXor(w1, w4);
+    let w6 = this.wXor(w2, w5);
+    let w7 = this.wXor(w3, w6);
+    let w8 = this.wXor(w4, this.getNextW(w7, 1));
+    let w9 = this.wXor(w5, w8);
+    let w10 = this.wXor(w6, w9);
+    let w11 = this.wXor(w7, w10);
+    let w12 = this.wXor(w8, this.getNextW(w11, 2));
+    let w13 = this.wXor(w9, w12);
+    let w14 = this.wXor(w10, w13);
+    let w15 = this.wXor(w11, w14);
+    let w16 = this.wXor(w12, this.getNextW(w15, 3));
+    let w17 = this.wXor(w13, w16);
+    let w18 = this.wXor(w14, w17);
+    let w19 = this.wXor(w15, w18);
+    let w20 = this.wXor(w16, this.getNextW(w19, 4));
+    let w21 = this.wXor(w17, w20);
+    let w22 = this.wXor(w18, w21);
+    let w23 = this.wXor(w19, w22);
+    let w24 = this.wXor(w20, this.getNextW(w23, 5));
+    let w25 = this.wXor(w21, w24);
+    let w26 = this.wXor(w22, w25);
+    let w27 = this.wXor(w23, w26);
+    let w28 = this.wXor(w24, this.getNextW(w27, 6));
+    let w29 = this.wXor(w25, w28);
+    let w30 = this.wXor(w26, w29);
+    let w31 = this.wXor(w27, w30);
+    let w32 = this.wXor(w28, this.getNextW(w31, 7));
+    let w33 = this.wXor(w29, w32);
+    let w34 = this.wXor(w30, w33);
+    let w35 = this.wXor(w31, w34);
+    let w36 = this.wXor(w32, this.getNextW(w35, 8));
+    let w37 = this.wXor(w33, w36);
+    let w38 = this.wXor(w34, w37);
+    let w39 = this.wXor(w35, w38);
+    let w40 = this.wXor(w36, this.getNextW(w39, 9));
+    let w41 = this.wXor(w37, w40);
+    let w42 = this.wXor(w38, w41);
+    let w43 = this.wXor(w39, w42);
     let key0 = w0.concat(w1, w2, w3);
     let key1 = w4.concat(w5, w6, w7);
     let key2 = w8.concat(w9, w10, w11);
@@ -370,20 +377,50 @@ class AES128 {
     let key8 = w32.concat(w33, w34, w35);
     let key9 = w36.concat(w37, w38, w39);
     let key10 = w40.concat(w41, w42, w43);
+    for (let i = 0; i < 16; ++i) {
+      key0[i] = key0[i].toString(16);
+      key1[i] = key1[i].toString(16);
+      key2[i] = key2[i].toString(16);
+      key3[i] = key3[i].toString(16);
+      key4[i] = key4[i].toString(16);
+      key5[i] = key5[i].toString(16);
+      key6[i] = key6[i].toString(16);
+      key7[i] = key7[i].toString(16);
+      key8[i] = key8[i].toString(16);
+      key9[i] = key9[i].toString(16);
+      key10[i] = key10[i].toString(16);
+    }
+    this.roundKeys.push(
+      key0,
+      key1,
+      key2,
+      key3,
+      key4,
+      key5,
+      key6,
+      key7,
+      key8,
+      key9,
+      key10
+    );
+    console.log(this.roundKeys);
     textArr = this.toHex(this.text);
     if (textArr.length < 16) {
       for (let i = 0; i < 16 - textArr.length; ++i) textArr.push(0);
     } else {
       let newTextArr = [];
-      while (textArr.length > 16) {
+      while (textArr.length > 0) {
         let tempArr = [];
         for (let i = 0; i < 16; ++i) {
-          tempArr.push(textArr.shift());
+          if (textArr.length === 0) tempArr.push(0);
+          else tempArr.push(textArr.shift());
         }
         newTextArr.push(tempArr);
       }
     }
-    if (textArr.length > 0) newTextArr.push(textArr);
+    //round 0
+    this.addRoundKey(0);
+    for (let round = 1; round <= 10; ++round) {}
   };
   /*******************************************************/
 
@@ -393,9 +430,12 @@ class AES128 {
     //left shift
     w.push(w.shift());
     //sBox replacement
-    nw = [];
+    let nw = [];
+    console.log(w);
     for (let i = 0; i < w.length; ++i) {
-      let x = this.sBox[parseInt(w.charAt(0), 16)][parseInt(w.charAt(1), 16)];
+      let x = this.sBox[parseInt(w[i].toString(16).charAt(0), 16)][
+        parseInt(w[i].toString(16).charAt(1), 16)
+      ];
       x = this.shahiXOR(x, this.rCon[round][i]);
       nw.push(x);
     }
@@ -406,18 +446,19 @@ class AES128 {
   //XOR
   /*******************************************************/
   shahiXOR = (a, b) => {
-    if (typeof a === "number" && typeof b === "number")
+    return a ^ b;
+    /*     if (typeof a === "number" && typeof b === "number")
       return parseInt(a) ^ parseInt(b);
     else if (typeof a === "number" && typeof b === "string")
       return parseInt(a) ^ parseInt(b, 16);
     else if (typeof a === "string" && typeof b === "number")
       return parseInt(a, 16) ^ parseInt(b);
     else if (typeof a === "string" && typeof b === "string")
-      return parseInt(a, 16) ^ parseInt(b, 16);
+      return parseInt(a, 16) ^ parseInt(b, 16); */
   };
 
   wXor = (w1, w2) => {
-    nw = [];
+    let nw = [];
     for (let i = 0; i < w1.length; ++i) {
       let x = this.shahiXOR(w1[i], w2[i]);
       nw.push(x);
@@ -430,9 +471,9 @@ class AES128 {
   /*******************************************************/
   toHex = str => {
     let keyArr = [];
-    for (let i = 0, j = this.str.length; i < j; ++i) {
-      let hex = Number(this.str.charCodeAt(i)).toString(16);
-      keyArr.push(parseInt(hex));
+    for (let i = 0, j = str.length; i < j; ++i) {
+      let hex = Number(str.charCodeAt(i)).toString(16);
+      keyArr.push(parseInt(hex, 16));
     }
     return keyArr;
   };
@@ -480,7 +521,7 @@ class AES128 {
 
   mixColumns = () => {};
 
-  addRoundKey = () => {};
+  addRoundKey = round => {};
   /******************************************************/
 }
 
