@@ -1,3 +1,6 @@
+/* let originalLog = console.log;
+console.log = obj => originalLog(JSON.stringify(obj));
+ */
 class AES128 {
   //Constructor. Takes in input text and key
   /*******************************************************/
@@ -325,44 +328,45 @@ class AES128 {
     console.log(w2);
     let w3 = keyArr.slice(12);
     console.log(w3);
+    console.log(this.wXor(w0, w1));
 
-    let w4 = this.wXor(w0, this.getNextW(w3, 0));
+    let w4 = this.wXor(w0, this.getNextW(w3, 1));
     let w5 = this.wXor(w1, w4);
     let w6 = this.wXor(w2, w5);
     let w7 = this.wXor(w3, w6);
-    let w8 = this.wXor(w4, this.getNextW(w7, 1));
+    let w8 = this.wXor(w4, this.getNextW(w7, 2));
     let w9 = this.wXor(w5, w8);
     let w10 = this.wXor(w6, w9);
     let w11 = this.wXor(w7, w10);
-    let w12 = this.wXor(w8, this.getNextW(w11, 2));
+    let w12 = this.wXor(w8, this.getNextW(w11, 3));
     let w13 = this.wXor(w9, w12);
     let w14 = this.wXor(w10, w13);
     let w15 = this.wXor(w11, w14);
-    let w16 = this.wXor(w12, this.getNextW(w15, 3));
+    let w16 = this.wXor(w12, this.getNextW(w15, 4));
     let w17 = this.wXor(w13, w16);
     let w18 = this.wXor(w14, w17);
     let w19 = this.wXor(w15, w18);
-    let w20 = this.wXor(w16, this.getNextW(w19, 4));
+    let w20 = this.wXor(w16, this.getNextW(w19, 5));
     let w21 = this.wXor(w17, w20);
     let w22 = this.wXor(w18, w21);
     let w23 = this.wXor(w19, w22);
-    let w24 = this.wXor(w20, this.getNextW(w23, 5));
+    let w24 = this.wXor(w20, this.getNextW(w23, 6));
     let w25 = this.wXor(w21, w24);
     let w26 = this.wXor(w22, w25);
     let w27 = this.wXor(w23, w26);
-    let w28 = this.wXor(w24, this.getNextW(w27, 6));
+    let w28 = this.wXor(w24, this.getNextW(w27, 7));
     let w29 = this.wXor(w25, w28);
     let w30 = this.wXor(w26, w29);
     let w31 = this.wXor(w27, w30);
-    let w32 = this.wXor(w28, this.getNextW(w31, 7));
+    let w32 = this.wXor(w28, this.getNextW(w31, 8));
     let w33 = this.wXor(w29, w32);
     let w34 = this.wXor(w30, w33);
     let w35 = this.wXor(w31, w34);
-    let w36 = this.wXor(w32, this.getNextW(w35, 8));
+    let w36 = this.wXor(w32, this.getNextW(w35, 9));
     let w37 = this.wXor(w33, w36);
     let w38 = this.wXor(w34, w37);
     let w39 = this.wXor(w35, w38);
-    let w40 = this.wXor(w36, this.getNextW(w39, 9));
+    let w40 = this.wXor(w36, this.getNextW(w39, 10));
     let w41 = this.wXor(w37, w40);
     let w42 = this.wXor(w38, w41);
     let w43 = this.wXor(w39, w42);
@@ -403,38 +407,39 @@ class AES128 {
       key9,
       key10
     );
-    console.log(this.roundKeys);
-    textArr = this.toHex(this.text);
-    if (textArr.length < 16) {
-      for (let i = 0; i < 16 - textArr.length; ++i) textArr.push(0);
-    } else {
-      let newTextArr = [];
-      while (textArr.length > 0) {
-        let tempArr = [];
-        for (let i = 0; i < 16; ++i) {
-          if (textArr.length === 0) tempArr.push(0);
-          else tempArr.push(textArr.shift());
-        }
-        newTextArr.push(tempArr);
+    for (let i = 0; i < this.roundKeys.length; ++i) {
+      for (let j = 0; j < this.roundKeys[i].length; ++j) {
+        if (this.roundKeys[i][j].length === 1)
+          this.roundKeys[i][j] = "0" + this.roundKeys[i][j];
       }
     }
+    console.log(this.roundKeys);
+
+    textArr=[];
+    
+    console.log();
     //round 0
     this.addRoundKey(0);
+    //round 1-10
     for (let round = 1; round <= 10; ++round) {}
   };
   /*******************************************************/
 
   //W operations
   /******************************************************/
-  getNextW = (w, round) => {
+  getNextW = (xw, round) => {
+    //by value
+    let w = xw.slice();
     //left shift
     w.push(w.shift());
     //sBox replacement
     let nw = [];
     console.log(w);
     for (let i = 0; i < w.length; ++i) {
-      let x = this.sBox[parseInt(w[i].toString(16).charAt(0), 16)][
-        parseInt(w[i].toString(16).charAt(1), 16)
+      let temp = w[i].toString(16);
+      if (temp.length === 1) temp = "0" + temp;
+      let x = this.sBox[parseInt(temp.charAt(0), 16)][
+        parseInt(temp.charAt(1), 16)
       ];
       x = this.shahiXOR(x, this.rCon[round][i]);
       nw.push(x);
