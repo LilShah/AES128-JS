@@ -9,6 +9,7 @@ class AES128 {
     this.textArr = [];
     this.key = key;
     this.roundKeys = [];
+    this.cipherText = [];
     this.sBox = [
       [
         0x63,
@@ -432,7 +433,15 @@ class AES128 {
     //round 0
     this.addRoundKey(0);
     //round 1-10
-    for (let round = 1; round <= 10; ++round) {}
+    for (let round = 1; round < 10; ++round) {
+      this.subBytes(round);
+      this.shiftRows(round);
+      this.mixColumns(round);
+      this.addRoundKey(round);
+    }
+    this.subBytes(10);
+    this.shiftRows(10);
+    this.addRoundKey(10);
   };
   /*******************************************************/
 
@@ -463,15 +472,17 @@ class AES128 {
   shahiXOR = (a, b) => {
     if ((typeof a === typeof b) === "string")
       return parseInt(a, 16) ^ parseInt(b, 16);
-    return a ^ b;
-    /*     if (typeof a === "number" && typeof b === "number")
-      return parseInt(a) ^ parseInt(b);
     else if (typeof a === "number" && typeof b === "string")
       return parseInt(a) ^ parseInt(b, 16);
     else if (typeof a === "string" && typeof b === "number")
       return parseInt(a, 16) ^ parseInt(b);
-    else if (typeof a === "string" && typeof b === "string")
-      return parseInt(a, 16) ^ parseInt(b, 16); */
+    return a ^ b;
+    /*
+      if (typeof a === "number" && typeof b === "number")
+      return parseInt(a) ^ parseInt(b);
+      else if (typeof a === "string" && typeof b === "string")
+      return parseInt(a, 16) ^ parseInt(b, 16); 
+     */
   };
 
   wXor = (w1, w2) => {
@@ -527,13 +538,29 @@ class AES128 {
 
   //Round start
   /******************************************************/
-  subBytes = () => {};
+  subBytes = round => {};
 
-  shiftRows = () => {};
+  shiftRows = round => {};
 
-  mixColumns = () => {};
+  mixColumns = round => {};
 
-  addRoundKey = round => {};
+  addRoundKey = (round, encrypt = true) => {
+    if (encrypt) {
+      if (round === 0) {
+        for (let i = 0; i < this.text.length; ++i) {
+          this.cipherText.push(this.wXor(this.text[i], this.key));
+        }
+      } else {
+        for (let i = 0; i < this.text.length; ++i) {
+          this.cipherText[i] = this.wXor(this.keyArr[i], this.cipherText[i]);
+        }
+      }
+    } else {
+      for (let i = 0; i < this.text.length; ++i) {
+        this.cipherText[i] = this.wXor(this.keyArr[i], this.cipherText[i]);
+      }
+    }
+  };
   /******************************************************/
 }
 
