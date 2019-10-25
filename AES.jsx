@@ -6,7 +6,9 @@ class AES128 {
   /*******************************************************/
   constructor(text, key) {
     this.text = text;
+    this.textArr = [];
     this.key = key;
+    this.roundKeys = [];
     this.sBox = [
       [
         0x63,
@@ -310,25 +312,19 @@ class AES128 {
       [0x1b, 0x00, 0x00, 0x00],
       [0x36, 0x00, 0x00, 0x00]
     ];
-    this.roundKeys = [];
   }
   /*******************************************************/
 
   //Start here
   /*******************************************************/
   runAes = () => {
+    this.key = this.keyPadding(this.key);
+    console.log(this.key);
     let keyArr = this.toHex(this.key);
-    keyArr = this.keyPadding(keyArr);
-    console.log(keyArr);
     let w0 = keyArr.slice(0, 4);
-    console.log(w0);
     let w1 = keyArr.slice(4, 8);
-    console.log(w1);
     let w2 = keyArr.slice(8, 12);
-    console.log(w2);
     let w3 = keyArr.slice(12);
-    console.log(w3);
-    console.log(this.wXor(w0, w1));
 
     let w4 = this.wXor(w0, this.getNextW(w3, 1));
     let w5 = this.wXor(w1, w4);
@@ -407,6 +403,7 @@ class AES128 {
       key9,
       key10
     );
+    //single digit hex to double digit
     for (let i = 0; i < this.roundKeys.length; ++i) {
       for (let j = 0; j < this.roundKeys[i].length; ++j) {
         if (this.roundKeys[i][j].length === 1)
@@ -415,9 +412,23 @@ class AES128 {
     }
     console.log(this.roundKeys);
 
-    textArr=[];
-    
-    console.log();
+    let lasti = 0;
+    for (let i = 0; i < this.text.length; ++i) {
+      if (i > 0 && i % 16 === 0) {
+        let x = this.text.slice(i - 16, i);
+        this.textArr.push(x);
+        lasti = i;
+      }
+    }
+    let x = "";
+    for (let i = lasti; i < lasti + 16; ++i) {
+      if (i < this.text.length) {
+        x = x + this.text.charAt(i);
+      } else x = x + "0";
+    }
+
+    this.textArr.push(x);
+    console.log(this.textArr);
     //round 0
     this.addRoundKey(0);
     //round 1-10
@@ -434,7 +445,6 @@ class AES128 {
     w.push(w.shift());
     //sBox replacement
     let nw = [];
-    console.log(w);
     for (let i = 0; i < w.length; ++i) {
       let temp = w[i].toString(16);
       if (temp.length === 1) temp = "0" + temp;
@@ -451,6 +461,8 @@ class AES128 {
   //XOR
   /*******************************************************/
   shahiXOR = (a, b) => {
+    if ((typeof a === typeof b) === "string")
+      return parseInt(a, 16) ^ parseInt(b, 16);
     return a ^ b;
     /*     if (typeof a === "number" && typeof b === "number")
       return parseInt(a) ^ parseInt(b);
@@ -487,14 +499,9 @@ class AES128 {
 
   //Autokey padding
   /******************************************************/
-  keyPadding = keyArr => {
-    let i = 0;
-    while (keyArr.length < 16) {
-      keyArr.push(Number(this.text.charCodeAt(i)).toString(16));
-      ++i;
-      if (i === this.text.length) i = 0;
-    }
-    return keyArr;
+  keyPadding = key => {
+    if (key.length > 16) return key.slice(0, 16);
+    else return key + this.text.slice(0, 16 - key.length);
   };
   /******************************************************/
 
