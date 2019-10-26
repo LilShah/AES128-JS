@@ -1,0 +1,1 @@
+Tested to work on Google Chrome 77. Does not work on Microsoft Edge browser.
