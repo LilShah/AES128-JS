@@ -412,7 +412,13 @@ class AES128 {
       }
     }
     console.log(this.roundKeys);
-
+    //key hex to int
+    for (let i = 0; i < this.roundKeys.length; ++i) {
+      for (let j = 0; j < this.roundKeys[i].length; ++j) {
+        this.roundKeys[i][j] = parseInt(this.roundKeys[i][j], 16);
+      }
+    }
+    console.log(this.roundKeys);
     let lasti = 0;
     for (let i = 0; i < this.text.length; ++i) {
       if (i > 0 && i % 16 === 0) {
@@ -430,18 +436,49 @@ class AES128 {
 
     this.textArr.push(x);
     console.log(this.textArr);
+    //plain text to hex
+    for (let i = 0; i < this.textArr.length; ++i)
+      this.textArr[i] = this.toHex(this.textArr[i]);
+    console.log(this.textArr);
     //round 0
+    this.cipherText = this.textArr.slice();
+
     this.addRoundKey(0);
+
+    let testCipher = this.cipherText.slice();
+    for (let i = 0; i < testCipher.length; ++i) {
+      for (let j = 0; j < testCipher[i].length; ++j) {
+        testCipher[i][j] = testCipher[i][j].toString(16);
+      }
+    }
     //round 1-10
+    console.log("0: " + testCipher);
     for (let round = 1; round < 10; ++round) {
       this.subBytes(round);
       this.shiftRows(round);
       this.mixColumns(round);
+      let testCipher = this.cipherText.slice();
+      for (let i = 0; i < testCipher.length; ++i) {
+        for (let j = 0; j < testCipher[i].length; ++j) {
+          testCipher[i][j] = testCipher[i][j].toString(16);
+        }
+      }
+      console.log("temp: " + testCipher);
       this.addRoundKey(round);
+      //console.log(round + ": " + this.cipherText);
     }
     this.subBytes(10);
     this.shiftRows(10);
     this.addRoundKey(10);
+    for (let i = 0; i < this.cipherText.length; ++i) {
+      for (let j = 0; j < this.cipherText[i].length; ++j) {
+        this.cipherText[i][j] = this.cipherText[i][j].toString(16);
+      }
+      this.cipherText[i] = this.cipherText[i].join("");
+    }
+    this.cipherText = this.cipherText.join("");
+    return this.cipherText;
+    //console.log("10: " + this.cipherText);
   };
   /*******************************************************/
 
@@ -470,6 +507,9 @@ class AES128 {
   //XOR
   /*******************************************************/
   shahiXOR = (a, b) => {
+    return a ^ b;
+
+    /*     
     if ((typeof a === typeof b) === "string")
       return parseInt(a, 16) ^ parseInt(b, 16);
     else if (typeof a === "number" && typeof b === "string")
@@ -477,6 +517,7 @@ class AES128 {
     else if (typeof a === "string" && typeof b === "number")
       return parseInt(a, 16) ^ parseInt(b);
     return a ^ b;
+     */
     /*
       if (typeof a === "number" && typeof b === "number")
       return parseInt(a) ^ parseInt(b);
@@ -511,8 +552,8 @@ class AES128 {
   //Autokey padding
   /******************************************************/
   keyPadding = key => {
-    if (key.length > 16) return key.slice(0, 16);
-    else return key + this.text.slice(0, 16 - key.length);
+    while (key.length < 16) key += this.text.slice(0, 16 - key.length);
+    return key.slice(0, 16);
   };
   /******************************************************/
 
@@ -538,26 +579,88 @@ class AES128 {
 
   //Round start
   /******************************************************/
-  subBytes = round => {};
+  subBytes = () => {
+    for (let i = 0; i < this.cipherText.length; ++i) {
+      for (let j = 0; j < this.cipherText[i].length; ++j) {
+        let temp = this.cipherText[i][j].toString(16);
+        if (temp.length === 1) temp = "0" + temp;
+        this.cipherText[i][j] = this.sBox[parseInt(temp.charAt(0), 16)][
+          parseInt(temp.charAt(1), 16)
+        ];
+      }
+    }
+  };
 
-  shiftRows = round => {};
+  shiftRows = () => {
+    for (let i = 0; i < this.cipherText.length; ++i) {
+      [
+        this.cipherText[i][1],
+        this.cipherText[i][5],
+        this.cipherText[i][9],
+        this.cipherText[i][13],
+        this.cipherText[i][2],
+        this.cipherText[i][6],
+        this.cipherText[i][10],
+        this.cipherText[i][14],
+        this.cipherText[i][7],
+        this.cipherText[i][11],
+        this.cipherText[i][15],
+        this.cipherText[i][3]
+      ] = [
+        this.cipherText[i][5],
+        this.cipherText[i][9],
+        this.cipherText[i][13],
+        this.cipherText[i][1],
+        this.cipherText[i][10],
+        this.cipherText[i][14],
+        this.cipherText[i][2],
+        this.cipherText[i][6],
+        this.cipherText[i][3],
+        this.cipherText[i][7],
+        this.cipherText[i][11],
+        this.cipherText[i][15]
+      ];
+    }
+  };
 
-  mixColumns = round => {};
+  mixColumns = round => {
+    let matrix = [[2, 1, 1, 3], [3, 2, 1, 1], [1, 3, 2, 1], [1, 1, 3, 2]];
+    matrix = matrix[0].map((col, i) => matrix.map(row => row[i]));
+    for (let i = 0; i < this.cipherText.length; ++i) {
+      let newArr = [];
+      for (let j = 1; j <= 4; ++j)
+        newArr.push(this.cipherText[i].slice((j - 1) * 4, 4 * j));
+      newArr = newArr[0].map((col, i) => newArr.map(row => row[i]));
+      let result = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+      for (let j = 0; j < 4; ++j) {
+        for (let k = 0; k < 4; ++k) {
+          for (let l = 0; l < 4; ++l) {
+            let x = 0;
+            if (matrix[j][l] === 1) x = newArr[l][k];
+            else if (matrix[j][l] === 2) x = newArr[l][k] * 2;
+            else x = (2 * newArr[l][k]) ^ newArr[l][k];
+            result[j][k] ^= x;
+          }
+          if (result[j][k] > 256) result[j][k] = result[j][k] % 256;
+        }
+      }
+      result = result[0].map((col, i) => result.map(row => row[i]));
+
+      console.log(matrix);
+      console.log(newArr);
+      console.log(result);
+      result = [].concat(...result);
+      this.cipherText[i] = result.slice();
+    }
+  };
 
   addRoundKey = (round, encrypt = true) => {
     if (encrypt) {
-      if (round === 0) {
-        for (let i = 0; i < this.text.length; ++i) {
-          this.cipherText.push(this.wXor(this.text[i], this.key));
-        }
-      } else {
-        for (let i = 0; i < this.text.length; ++i) {
-          this.cipherText[i] = this.wXor(this.keyArr[i], this.cipherText[i]);
-        }
-      }
-    } else {
-      for (let i = 0; i < this.text.length; ++i) {
-        this.cipherText[i] = this.wXor(this.keyArr[i], this.cipherText[i]);
+      for (let i = 0; i < this.cipherText.length; ++i) {
+        this.cipherText[i] = this.wXor(
+          this.roundKeys[round],
+          this.cipherText[i]
+        );
       }
     }
   };
@@ -573,6 +676,4 @@ main = button => {
     let tester = new AES128(input, key);
     output.value = tester.runAes();
   }
-
-  console.log(output.value);
 };
