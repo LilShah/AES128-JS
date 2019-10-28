@@ -637,15 +637,18 @@ class AES128 {
           for (let l = 0; l < 4; ++l) {
             let x = 0;
             if (matrix[j][l] === 1) x = newArr[l][k];
-            else if (matrix[j][l] === 2) x = newArr[l][k] * 2;
-            else x = (2 * newArr[l][k]) ^ newArr[l][k];
+            else if (matrix[j][l] === 2) x = (newArr[l][k] << 1) % 256;
+            else x = ((newArr[l][k] << 1) ^ newArr[l][k]) % 256;
             result[j][k] ^= x;
           }
-          if (result[j][k] > 256) result[j][k] = result[j][k] % 256;
+        }
+      }
+      for (let l = 0; l < result.length; ++l) {
+        for (let j = 0; j < result[i].length; ++j) {
+          result[l][j] = result[l][j].toString(16);
         }
       }
       result = result[0].map((col, i) => result.map(row => row[i]));
-
       console.log(matrix);
       console.log(newArr);
       console.log(result);
