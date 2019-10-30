@@ -445,29 +445,14 @@ class AES128 {
 
     this.addRoundKey(0);
 
-    let testCipher = this.cipherText.slice();
-    for (let i = 0; i < testCipher.length; ++i) {
-      for (let j = 0; j < testCipher[i].length; ++j) {
-        testCipher[i][j] = testCipher[i][j].toString(16);
-      }
-    }
-    //round 1-10
-    //console.log("0: " + testCipher);
+    //round 1-9
     for (let round = 1; round < 10; ++round) {
       this.subBytes(round);
       this.shiftRows(round);
       this.mixColumns(round);
-      /*       
-      let testCipher = this.cipherText.slice();
-      for (let i = 0; i < testCipher.length; ++i) {
-        for (let j = 0; j < testCipher[i].length; ++j) {
-          testCipher[i][j] = testCipher[i][j].toString(16);
-        }
-      }
-      console.log("temp: " + testCipher);
-      */
       this.addRoundKey(round);
     }
+    //round 10
     this.subBytes(10);
     this.shiftRows(10);
     this.addRoundKey(10);
@@ -498,7 +483,7 @@ class AES128 {
       let x = this.sBox[parseInt(temp.charAt(0), 16)][
         parseInt(temp.charAt(1), 16)
       ];
-      x = this.shahiXOR(x, this.rCon[round][i]);
+      x = x ^ this.rCon[round][i];
       nw.push(x);
     }
     return nw;
@@ -507,30 +492,10 @@ class AES128 {
 
   //XOR
   /*******************************************************/
-  shahiXOR = (a, b) => {
-    return a ^ b;
-
-    /*     
-    if ((typeof a === typeof b) === "string")
-      return parseInt(a, 16) ^ parseInt(b, 16);
-    else if (typeof a === "number" && typeof b === "string")
-      return parseInt(a) ^ parseInt(b, 16);
-    else if (typeof a === "string" && typeof b === "number")
-      return parseInt(a, 16) ^ parseInt(b);
-    return a ^ b;
-     */
-    /*
-      if (typeof a === "number" && typeof b === "number")
-      return parseInt(a) ^ parseInt(b);
-      else if (typeof a === "string" && typeof b === "string")
-      return parseInt(a, 16) ^ parseInt(b, 16); 
-     */
-  };
-
   wXor = (w1, w2) => {
     let nw = [];
     for (let i = 0; i < w1.length; ++i) {
-      let x = this.shahiXOR(w1[i], w2[i]);
+      let x = w1[i] ^ w2[i];
       nw.push(x);
     }
     return nw;
@@ -624,7 +589,7 @@ class AES128 {
     }
   };
 
-  mixColumns = round => {
+  mixColumns = () => {
     let matrix = [[2, 1, 1, 3], [3, 2, 1, 1], [1, 3, 2, 1], [1, 1, 3, 2]];
     matrix = matrix[0].map((col, i) => matrix.map(row => row[i]));
     for (let i = 0; i < this.cipherText.length; ++i) {
@@ -655,9 +620,6 @@ class AES128 {
         }
       }
       result = result[0].map((col, i) => result.map(row => row[i]));
-      // console.log(matrix);
-      // console.log(newArr);
-      // console.log(result);
       result = [].concat(...result);
       this.cipherText[i] = result.slice();
     }
