@@ -320,7 +320,7 @@ class AES128 {
   /*******************************************************/
   runAes = () => {
     this.key = this.keyPadding(this.key);
-    console.log(this.key);
+    //console.log(this.key);
     let keyArr = this.toHex(this.key);
     let w0 = keyArr.slice(0, 4);
     let w1 = keyArr.slice(4, 8);
@@ -411,14 +411,14 @@ class AES128 {
           this.roundKeys[i][j] = "0" + this.roundKeys[i][j];
       }
     }
-    console.log(this.roundKeys);
+    //console.log(this.roundKeys);
     //key hex to int
     for (let i = 0; i < this.roundKeys.length; ++i) {
       for (let j = 0; j < this.roundKeys[i].length; ++j) {
         this.roundKeys[i][j] = parseInt(this.roundKeys[i][j], 16);
       }
     }
-    console.log(this.roundKeys);
+    //console.log(this.roundKeys);
     let lasti = 0;
     for (let i = 0; i < this.text.length; ++i) {
       if (i > 0 && i % 16 === 0) {
@@ -435,11 +435,11 @@ class AES128 {
     }
 
     this.textArr.push(x);
-    console.log(this.textArr);
+    //console.log(this.textArr);
     //plain text to hex
     for (let i = 0; i < this.textArr.length; ++i)
       this.textArr[i] = this.toHex(this.textArr[i]);
-    console.log(this.textArr);
+    //console.log(this.textArr);
     //round 0
     this.cipherText = this.textArr.slice();
 
@@ -452,11 +452,12 @@ class AES128 {
       }
     }
     //round 1-10
-    console.log("0: " + testCipher);
+    //console.log("0: " + testCipher);
     for (let round = 1; round < 10; ++round) {
       this.subBytes(round);
       this.shiftRows(round);
       this.mixColumns(round);
+      /*       
       let testCipher = this.cipherText.slice();
       for (let i = 0; i < testCipher.length; ++i) {
         for (let j = 0; j < testCipher[i].length; ++j) {
@@ -464,8 +465,8 @@ class AES128 {
         }
       }
       console.log("temp: " + testCipher);
+      */
       this.addRoundKey(round);
-      //console.log(round + ": " + this.cipherText);
     }
     this.subBytes(10);
     this.shiftRows(10);
@@ -637,8 +638,12 @@ class AES128 {
           for (let l = 0; l < 4; ++l) {
             let x = 0;
             if (matrix[j][l] === 1) x = newArr[l][k];
-            else if (matrix[j][l] === 2) x = (newArr[l][k] << 1) % 256;
-            else x = ((newArr[l][k] << 1) ^ newArr[l][k]) % 256;
+            else if (matrix[j][l] === 2) x = newArr[l][k] << 1;
+            else x = (newArr[l][k] << 1) ^ newArr[l][k];
+            if (x > 255) {
+              x %= 256;
+              x ^= 0x1b;
+            }
             result[j][k] ^= x;
           }
         }
@@ -646,12 +651,13 @@ class AES128 {
       for (let l = 0; l < result.length; ++l) {
         for (let j = 0; j < result[i].length; ++j) {
           result[l][j] = result[l][j].toString(16);
+          if (result[l][j].length === 1) result[l][j] = "0" + result[l][j];
         }
       }
       result = result[0].map((col, i) => result.map(row => row[i]));
-      console.log(matrix);
-      console.log(newArr);
-      console.log(result);
+      // console.log(matrix);
+      // console.log(newArr);
+      // console.log(result);
       result = [].concat(...result);
       this.cipherText[i] = result.slice();
     }
@@ -679,4 +685,5 @@ main = button => {
     let tester = new AES128(input, key);
     output.value = tester.runAes();
   }
+  console.log(output.value);
 };
