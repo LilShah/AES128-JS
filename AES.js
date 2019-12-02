@@ -590,14 +590,24 @@ class AES128 {
   };
 
   mixColumns = () => {
-    let matrix = [[2, 1, 1, 3], [3, 2, 1, 1], [1, 3, 2, 1], [1, 1, 3, 2]];
+    let matrix = [
+      [2, 1, 1, 3],
+      [3, 2, 1, 1],
+      [1, 3, 2, 1],
+      [1, 1, 3, 2]
+    ];
     matrix = matrix[0].map((col, i) => matrix.map(row => row[i]));
     for (let i = 0; i < this.cipherText.length; ++i) {
       let newArr = [];
       for (let j = 1; j <= 4; ++j)
         newArr.push(this.cipherText[i].slice((j - 1) * 4, 4 * j));
       newArr = newArr[0].map((col, i) => newArr.map(row => row[i]));
-      let result = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+      let result = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+      ];
       for (let j = 0; j < 4; ++j) {
         for (let k = 0; k < 4; ++k) {
           for (let l = 0; l < 4; ++l) {
